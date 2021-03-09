@@ -1,7 +1,8 @@
 import { Card, Button } from 'react-bootstrap'
 import placeholder from '../../imagens/286x180.png'
+import PropTypes from 'prop-types'
 
-function ListarProdutos() {
+function ListarProdutos(props) {
 
   const produtos = [
     { nome: 'Aprenda Java', preco: 'R$ 59,99' },
@@ -15,7 +16,9 @@ function ListarProdutos() {
   ];
 
   function handleComprar(event, produto) {
-
+    event.preventDefault()
+    props.adicionarProduto(produto)
+    props.exibirMensagem(produto)
   }
 
   function render() {
@@ -37,7 +40,7 @@ function ListarProdutos() {
             variant='success'
             style={{ width: '100%' }}
             onClick={(event) => handleComprar(event, produto)}>
-            Comprar({produto.preco})
+            Comprar ({produto.preco})
             </Button>
         </Card.Body>
       </Card>
@@ -47,6 +50,11 @@ function ListarProdutos() {
   }
 
   return render()
+}
+
+ListarProdutos.propTypes = {
+  adicionarProduto: PropTypes.func.isRequired,
+  exibirMensagem: PropTypes.func.isRequired
 }
 
 export default ListarProdutos

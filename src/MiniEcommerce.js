@@ -10,10 +10,34 @@ function MiniEcommerce() {
   const [exibirCheckout, setExibirCheckout] = useState(false)
   const [total, setTotal] = useState('0,00')
 
+  function adicionarProduto(produto) {
+    const objCarrinho = Object.assign({}, carrinho)
+
+    let novoProduto = true
+    objCarrinho.produtos.forEach((prod, indice) => {
+      if (prod.nome === produto.nome) {
+        objCarrinho.produtos[indice].quantidade++
+        novoProduto = false
+      }
+    })
+
+    if (novoProduto) {
+      objCarrinho.produtos.push({
+        nome: produto.nome,
+        preco: produto.preco,
+        quantidade: 1
+      })
+    }
+
+    setCarrinho(objCarrinho)
+  }
+
   return (
     <div>
-      <Menu/>
-      <Produtos />
+      <Menu />
+      <Produtos
+        visivel={exibirProdutos}
+        adicionarProduto={adicionarProduto} />
       <Checkout />
     </div>
   );
