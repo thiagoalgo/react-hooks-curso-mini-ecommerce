@@ -9,6 +9,19 @@ import PropTypes from 'prop-types'
 import { propTypes } from 'react-bootstrap/esm/Image'
 
 function Menu(props) {
+  function calcularTotal() {
+    if (props.produtos.length === 0) {
+      return '0,00'
+    } else {
+      let total = 0
+      props.produtos.forEach(produto => {
+        const preco = parseFloat(produto.preco.replace(',', '.').replace('R$', ''))
+        total += preco * produto.quantidade
+      });
+      return total.toFixed(2).replace('.', ',')
+    }
+  }
+
   return (
     <Navbar bg='dark' variant='dark'>
       <Navbar.Brand href=''>Mini-ecommerce</Navbar.Brand>
@@ -39,14 +52,14 @@ function Menu(props) {
             <NavDropdown.Item
               href=''
               data-testid='total-carrinho'>
-              Total: R$ {/* valor total itens do carrinho */}
+              Total: R$ {calcularTotal()}
             </NavDropdown.Item>
             <span className={props.produtos.length === 0 ? 'hidden' : null}>
               <NavDropdown.Divider />
               <NavDropdown.Item
                 href=''
                 style={{ color: 'green' }}
-                onClick={props.handleExibirCheckout}>
+                onClick={() => props.handleExibirCheckout(calcularTotal())}>
                 <FontAwesomeIcon icon={faCashRegister} />
                 &nbsp;
                 Finalizar compra
