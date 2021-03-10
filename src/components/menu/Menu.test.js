@@ -3,8 +3,11 @@ import Menu from './Menu';
 
 describe('Teste do componente Menu', () => {
   test('deve renderizar o componente corretamente', () => {
-    render(<Menu />);
-    const linkElement = screen.getByText(/menu/i);
+    render(<Menu
+      produtos={[]}
+      handleExibirProdutos={() => false}
+      handleExibirCheckout={() => false} />);
+    const linkElement = screen.getByText(/Mini-ecommerce/i);
     expect(linkElement).toBeInTheDocument();
   });
 })

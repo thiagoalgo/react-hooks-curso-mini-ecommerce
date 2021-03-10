@@ -6,7 +6,7 @@ import {
   faShoppingCart
 } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
-import { propTypes } from 'react-bootstrap/esm/Image'
+import ItensCarrinhoMenu from './ItensCarrinhoMenu'
 
 function Menu(props) {
   function calcularTotal() {
@@ -45,9 +45,7 @@ function Menu(props) {
               <strong>Produtos</strong>
             </NavDropdown.Item>
             <NavDropdown.Divider />
-            <NavDropdown.Item href=''>
-              {/* itens do carrinho */}
-            </NavDropdown.Item>
+            <ItensCarrinhoMenu produtos={props.produtos} />
             <NavDropdown.Divider />
             <NavDropdown.Item
               href=''
