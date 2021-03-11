@@ -3,10 +3,19 @@ import DatePicker, { registerLocale } from 'react-datepicker'
 import pt from 'date-fns/locale/pt'
 import 'react-datepicker/dist/react-datepicker.css'
 import ListarEstados from './ListarEstados'
+import ListarCidades from './ListarCidades'
+import { useState } from 'react'
 
 registerLocale('pt', pt)
 
 function Checkout(props) {
+
+  const [estado, setEstado] = useState('')
+
+  function handleChangeEstado(event) {
+    setEstado(event.target.value)
+  }
+
   return (
     <Jumbotron
       fluid
@@ -104,6 +113,7 @@ function Checkout(props) {
             <Form.Control
               as='select'
               name='estado'
+              onChange={handleChangeEstado}
               data-testid='estado'>
               <ListarEstados />
             </Form.Control>
@@ -123,7 +133,7 @@ function Checkout(props) {
               name='cidade'
               data-testid='cidade'>
               <option value="">Selecione a sua cidade</option>
-              {/* criar component para listar opcoes de cidade */}
+              <ListarCidades estado={estado} />
             </Form.Control>
             <Form.Control.Feedback type='invalid'>
               Selecione a sua cidade

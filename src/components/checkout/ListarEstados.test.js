@@ -1,4 +1,4 @@
-import { getByText, render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import ListarEstados from './ListarEstados';
 
 describe('Teste do componente ListarEstados', () => {
