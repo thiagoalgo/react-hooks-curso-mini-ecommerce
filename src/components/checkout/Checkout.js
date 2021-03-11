@@ -2,6 +2,7 @@ import { Form, Row, Col, Button, Jumbotron, Modal, FormCheck } from 'react-boots
 import DatePicker, { registerLocale } from 'react-datepicker'
 import pt from 'date-fns/locale/pt'
 import 'react-datepicker/dist/react-datepicker.css'
+import ListarEstados from './ListarEstados'
 
 registerLocale('pt', pt)
 
@@ -104,7 +105,7 @@ function Checkout(props) {
               as='select'
               name='estado'
               data-testid='estado'>
-              {/* criar component para listar opcoes de estado */}
+              <ListarEstados />
             </Form.Control>
             <Form.Control.Feedback type='invalid'>
               Selecione o seu estado
@@ -187,6 +188,30 @@ function Checkout(props) {
           </Col>
         </Form.Group>
       </Form>
+
+      <Modal show={false} data-testeid='modal-compra-sucesso'>
+        <Modal.Header closeButton>
+          <Modal.Title>Compra finalizada com sucesso!</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Um email de confirmação será enviado com os detalhes da transação
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='success'>Continuar</Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={false} data-testeid='modal-erro-comprar'>
+        <Modal.Header closeButton>
+          <Modal.Title>Erro ao processar pedido!</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Tente novamente mais tarde
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='warning'>Continuar</Button>
+        </Modal.Footer>
+      </Modal>
     </Jumbotron>
   )
 }
