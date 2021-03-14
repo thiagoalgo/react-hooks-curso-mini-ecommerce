@@ -6,23 +6,58 @@ import ListarEstados from './ListarEstados'
 import ListarCidades from './ListarCidades'
 import { useState } from 'react'
 import PropTypes from 'prop-types'
-import { ErrorMessage, Formik } from 'formik'
+import { Formik } from 'formik'
+import * as yup from 'yup'
+import { validarCpf, formatarCpf } from '../../utils/cpf-util'
+import formatarCep from '../../utils/cep-util'
+import axios from 'axios'
 
 registerLocale('pt', pt)
 
 function Checkout(props) {
+
+  const CHECKOUT_URL = 'http://localhost:3001/mini-ecommerce/checkout/finalizar-compra'
 
   const [dataNascimento, setDataNascimento] = useState(null)
   const [formEnviado, setFormEnviado] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [showErroModal, setShowErroModal] = useState(false)
 
+  const schema = yup.object({
+    email: yup.string().email().required(),
+    nomeCompleto: yup.string().required().min(5),
+    cpf: yup.string().required().min(14).max(14)
+      .test('cpf-valido', 'CPF inválido', cpf => validarCpf(cpf)),
+    endereco: yup.string().required().min(5),
+    estado: yup.string().required(),
+    cidade: yup.string().required(),
+    cep: yup.string().required().min(9).max(9),
+    emailPromocional: yup.string().required(),
+    termosCondicoes: yup.bool().oneOf([true])
+  })
+
   function visivel() {
     return props.visivel ? null : 'hidden'
   }
 
-  function finalizarCompra(values) {
+  async function finalizarCompra(dados) {
+    if (!dataNascimento) {
+      setFormEnviado(true)
+      return
+    }
 
+    dados.dataNascimento = dataNascimento
+    dados.produtos = props.produtos
+    dados.total = `R$ ${props.total}`
+
+    try {
+      await axios.post(CHECKOUT_URL, dados)
+      setShowModal(true)
+      props.handleLimparCarrinho()
+    } catch (error) {
+      console.log(error)
+      setShowErroModal(true)
+    }
   }
 
   function handleDataNascimento(data) {
@@ -39,6 +74,15 @@ function Checkout(props) {
     } else {
       return 'form-control is-invalid'
     }
+  }
+
+  function handleContinuar() {
+    setShowModal(false)
+    props.handleExibirProdutos()
+  }
+
+  function handleFecharErroModal() {
+    setShowErroModal(false)
   }
 
   return (
@@ -60,7 +104,8 @@ function Checkout(props) {
           cep: '',
           termosCondicoes: false,
           emailPromocional: 'S'
-        }} >
+        }}
+        validationSchema={schema} >
         {({
           handleSubmit,
           handleChange,
@@ -143,7 +188,10 @@ function Checkout(props) {
                   name='cpf'
                   data-testid='txt-cpf'
                   value={values.cpf}
-                  onChange={handleChange}
+                  onChange={e => {
+                    e.currentTarget.value = formatarCpf(e.currentTarget.value)
+                    handleChange(e)
+                  }}
                   isValid={touched.cpf && !errors.cpf}
                   isInvalid={touched.cpf && !!errors.cpf} />
                 <Form.Control.Feedback type='invalid'>
@@ -226,7 +274,10 @@ function Checkout(props) {
                   name='cep'
                   data-testid='txt-cep'
                   value={values.cep}
-                  onChange={handleChange}
+                  onChange={e => {
+                    e.currentTarget.value = formatarCep(e.currentTarget.value)
+                    handleChange(e)
+                  }}
                   isValid={touched.cep && !errors.cep}
                   isInvalid={touched.cep && !!errors.cep} />
                 <Form.Control.Feedback type='invalid'>
@@ -287,7 +338,10 @@ function Checkout(props) {
         )}
       </Formik>
 
-      <Modal show={false} data-testeid='modal-compra-sucesso'>
+      <Modal
+        show={showModal}
+        onHide={handleContinuar}
+        data-testeid='modal-compra-sucesso'>
         <Modal.Header closeButton>
           <Modal.Title>Compra finalizada com sucesso!</Modal.Title>
         </Modal.Header>
@@ -295,11 +349,15 @@ function Checkout(props) {
           Um email de confirmação será enviado com os detalhes da transação
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='success'>Continuar</Button>
+          <Button variant='success'
+          onClick={handleContinuar}>Continuar</Button>
         </Modal.Footer>
       </Modal>
 
-      <Modal show={false} data-testeid='modal-erro-comprar'>
+      <Modal
+        show={showErroModal}
+        onHide={handleFecharErroModal} 
+        data-testeid='modal-erro-comprar'>
         <Modal.Header closeButton>
           <Modal.Title>Erro ao processar pedido!</Modal.Title>
         </Modal.Header>
@@ -307,7 +365,7 @@ function Checkout(props) {
           Tente novamente mais tarde
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='warning'>Continuar</Button>
+          <Button variant='warning' onClick={handleFecharErroModal}>Continuar</Button>
         </Modal.Footer>
       </Modal>
     </Jumbotron>
