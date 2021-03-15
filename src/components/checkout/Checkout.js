@@ -47,7 +47,7 @@ function Checkout(props) {
     }
 
     dados.dataNascimento = dataNascimento
-    dados.produtos = props.produtos
+    dados.produtos = JSON.stringify(props.produtos)
     dados.total = `R$ ${props.total}`
 
     try {
@@ -168,7 +168,7 @@ function Checkout(props) {
                   showMonthDropdown
                   showYearDropdown
                   dropdownMode='select'
-                  placeholderText='Selecione uma data'
+                  placeholderText='Selecione a data'
                   dateFormat='dd/MM/yyyy'
                   withPortal
                   selected={dataNascimento}
@@ -317,7 +317,7 @@ function Checkout(props) {
                 name='termosCondicoes'
                 label='Concordo com os termos e condições'
                 style={{ marginLeft: '15px' }}
-                data-testid='termos-condicoes'
+                data-testid='check-termos-condicoes'
                 value={values.termosCondicoes}
                 onChange={handleChange}
                 isValid={touched.termosCondicoes && !errors.termosCondicoes}
@@ -341,23 +341,26 @@ function Checkout(props) {
       <Modal
         show={showModal}
         onHide={handleContinuar}
-        data-testeid='modal-compra-sucesso'>
+        data-testid='modal-compra-sucesso'>
         <Modal.Header closeButton>
-          <Modal.Title>Compra finalizada com sucesso!</Modal.Title>
+          <Modal.Title>Compra realizada com sucesso!</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           Um email de confirmação será enviado com os detalhes da transação
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='success'
-          onClick={handleContinuar}>Continuar</Button>
+          <Button
+            variant='success'
+            onClick={handleContinuar}>
+            Continuar
+          </Button>
         </Modal.Footer>
       </Modal>
 
       <Modal
         show={showErroModal}
-        onHide={handleFecharErroModal} 
-        data-testeid='modal-erro-comprar'>
+        onHide={handleFecharErroModal}
+        data-testid='modal-erro-comprar'>
         <Modal.Header closeButton>
           <Modal.Title>Erro ao processar pedido!</Modal.Title>
         </Modal.Header>
@@ -365,7 +368,11 @@ function Checkout(props) {
           Tente novamente mais tarde
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='warning' onClick={handleFecharErroModal}>Continuar</Button>
+          <Button
+            variant='warning'
+            onClick={handleFecharErroModal}>
+            Continuar
+          </Button>
         </Modal.Footer>
       </Modal>
     </Jumbotron>
